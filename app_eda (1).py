@@ -48,20 +48,9 @@ class Home:
 
         # Kaggle 데이터셋 출처 및 소개
         st.markdown("""
-                ---
-                **Bike Sharing Demand 데이터셋**  
-                - 제공처: [Kaggle Bike Sharing Demand Competition](https://www.kaggle.com/c/bike-sharing-demand)  
-                - 설명: 2011–2012년 캘리포니아 주의 수도인 미국 워싱턴 D.C. 인근 도시에서 시간별 자전거 대여량을 기록한 데이터  
-                - 주요 변수:  
-                  - `datetime`: 날짜 및 시간  
-                  - `season`: 계절  
-                  - `holiday`: 공휴일 여부  
-                  - `workingday`: 근무일 여부  
-                  - `weather`: 날씨 상태  
-                  - `temp`, `atemp`: 기온 및 체감온도  
-                  - `humidity`, `windspeed`: 습도 및 풍속  
-                  - `casual`, `registered`, `count`: 비등록·등록·전체 대여 횟수  
-                """)
+                    EDA를 통해 파일을 분석하려면 로그인을 해 주세요
+                    이후 EDA 탭에서 분석할 수 있습니다.
+                    """)
 
 # ---------------------
 # 로그인 페이지 클래스
@@ -323,11 +312,14 @@ class EDA:
             st.header("📊 누적 영역 그래프")
             df_area = df[df['지역'] != '전국']
             pivot = df_area.pivot_table(index='연도', columns='지역', values='인구', aggfunc='sum')
-            pivot.columns.name = None  # remove the name '지역'
+            pivot.columns.name = None
             pivot = pivot.sort_index()
 
             fig, ax = plt.subplots(figsize=(14, 7))
-            pivot.plot.area(ax=ax, cmap='tab20')
+            x = pivot.index
+            y = pivot.values.T  # shape: (지역 수, 연도 수)
+            colors = plt.cm.tab20(np.linspace(0, 1, len(pivot.columns)))
+            ax.stackplot(x, y, labels=pivot.columns, colors=colors)
             ax.set_title("Stacked Area: Population by Region")
             ax.set_ylabel("Population")
             ax.set_xlabel("Year")
